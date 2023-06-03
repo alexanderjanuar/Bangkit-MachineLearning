@@ -1,7 +1,7 @@
-tensorflow == 2.9.1
+tensorflow 
 matplotlib == 3.7.1
 seaborn == 0.12.2
 numpy == 1.23.5
 efficientnet == 1.1.1
 scikit-learn == 1.2.2
-protobuf==3.20.1
+
