@@ -40,6 +40,10 @@ with col1:
 with col2:
     if uploaded_files is not None:
         predict_list = np.round(pred,3)
-        for i,j in enumerate(predict_list[0]):
-            st.text(class_names[i])
-            st.progress(float(j), text=f'{str(np.round(j,2))}%')
+        if (np.max(predict_list) > 0.8):
+            st.write(predict_list)
+            for i,j in enumerate(predict_list[0]):
+                st.text(class_names[i])
+                st.progress(float(j), text=f'{str(np.round(j,2))}%')
+        else:
+            st.header(f'Prediction : Bukan Tanaman')
