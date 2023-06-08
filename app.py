@@ -13,11 +13,17 @@ st.text("")
 st.divider()
 col1, col2 = st.columns(2)
 
-class_names = ['Agglonema', 'Alocasia', 'Gelombang Cinta', 'Janda Bolong', 'Lidah Mertua', 'Lili Paris', 'Pucuk Merah', 'Suplir']
+class_names = ['Not-Plant', 'Plant']
+class_names_plant = ['Sri Rezeki', 'Alocasia', 'Gelombang Cinta', 'Janda Bolong', 'Lidah Mertua', 'Lili Paris', 'Pucuk Merah', 'Suplir']
 
 with st.spinner('Compiling & Load the model..'):
-    model = load_model('Saved_Models/model_EfficientNetB3.h5',compile=False)
+    model = load_model('Saved_Models/model_identification.h5',compile=False)
     model.compile(optimizer = 'adam', 
+                loss = 'categorical_crossentropy', 
+                metrics = ['accuracy'])
+    
+    model_2 = load_model('Saved_Models/model_EfficientNetB3.h5',compile=False)
+    model_2.compile(optimizer = 'adam', 
                 loss = 'categorical_crossentropy', 
                 metrics = ['accuracy'])
 
@@ -34,16 +40,26 @@ with col1:
             x = np.expand_dims(x, axis=0)
             images = np.vstack([x])
 
-            pred = model.predict(images)
+            pred = model.predict(images,verbose=0)
             
 
 with col2:
     if uploaded_files is not None:
-        predict_list = np.round(pred,3)
-        if (np.max(predict_list) > 0.8):
-            st.write(predict_list)
-            for i,j in enumerate(predict_list[0]):
-                st.text(class_names[i])
-                st.progress(float(j), text=f'{str(np.round(j,2))}%')
+        pred_index = np.argmax(pred)
+        if (pred_index == 1):
+            with st.spinner('Further Predicting...'):
+                 pred = model_2.predict(images)
+            
+            predict_list = np.round(pred,3)
+            if (np.max(predict_list) > 0.8):
+                st.write(predict_list)
+                for i,j in enumerate(predict_list[0]):
+                    st.text(class_names_plant[i])
+                    st.progress(float(j), text=f'{str(np.round(j,2))}%')
+            else:
+                st.write(predict_list)
+                st.header(f'Prediction : Bukan Tanaman Yang Kita Punya')
         else:
+            st.write(pred)
             st.header(f'Prediction : Bukan Tanaman')
+
